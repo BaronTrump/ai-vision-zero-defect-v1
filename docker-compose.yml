@@ -1,0 +1,81 @@
+services:
+  project1-defect-detector:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ai-vision:latest
+    container_name: ai-vision-defect-detector
+    ports:
+      - "8501:8501"
+    working_dir: /app/01-ai-vision-defect-detector
+    command: >
+      sh -c "python src/data_generator.py --samples 200 2>/dev/null; 
+             streamlit run src/web_demo.py --server.port=8501 --server.address=0.0.0.0"
+    volumes:
+      - ./01-ai-vision-defect-detector:/app/01-ai-vision-defect-detector
+      - ai-vision_data:/app/data
+    environment:
+      - STREAMLIT_SERVER_MAX_UPLOAD_SIZE=200
+      - PYTHONUNBUFFERED=1
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    restart: unless-stopped
+
+  project2-robot-vision:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ai-vision:latest
+    container_name: ai-vision-robot-vision
+    ports:
+      - "8502:8502"
+    working_dir: /app/02-robot-vision-guidance
+    command: streamlit run src/web_demo.py --server.port=8502 --server.address=0.0.0.0
+    volumes:
+      - ./02-robot-vision-guidance:/app/02-robot-vision-guidance
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+
+  project3-anomaly-detector:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ai-vision:latest
+    container_name: ai-vision-anomaly-detector
+    ports:
+      - "8503:8503"
+    working_dir: /app/03-production-anomaly-detector
+    command: >
+      sh -c "python src/data_generator.py 2>/dev/null; 
+             streamlit run src/dashboard.py --server.port=8503 --server.address=0.0.0.0"
+    volumes:
+      - ./03-production-anomaly-detector:/app/03-production-anomaly-detector
+      - ai-vision_data:/app/data
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+
+  project4-monitor-dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ai-vision:latest
+    container_name: ai-vision-monitor-dashboard
+    ports:
+      - "8504:8504"
+    working_dir: /app/04-production-monitor-dashboard
+    command: streamlit run src/dashboard.py --server.port=8504 --server.address=0.0.0.0
+    volumes:
+      - ./04-production-monitor-dashboard:/app/04-production-monitor-dashboard
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+
+volumes:
+  ai-vision_data:

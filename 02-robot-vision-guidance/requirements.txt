@@ -1,0 +1,13 @@
+opencv-python>=4.8.0
+opencv-contrib-python>=4.8.0
+numpy>=1.24.0
+matplotlib>=3.7.0
+pygame>=2.5.0
+streamlit>=1.28.0
+pillow>=10.0.0
+scipy>=1.10.0
+transformations>=2022.9.26
+shapely>=2.0.0
+plotly>=5.15.0
+pandas>=2.0.0
+scikit-image>=0.21.0

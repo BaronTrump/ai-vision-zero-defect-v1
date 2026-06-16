@@ -1,0 +1,38 @@
+# Byte-compiled
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+.venv/
+env/
+venv/
+
+# Generated data
+**/data/
+**/models/*.pt
+**/models/*.pth
+**/models/*.pkl
+
+# YOLO weights
+yolov8*.pt
+yolov9*.pt
+yolo11*.pt
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Streamlit config
+.streamlit/
+
+# Reports
+**/reports/
+**/runs/
+**/output/
