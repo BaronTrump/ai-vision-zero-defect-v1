@@ -119,6 +119,37 @@ Access each project at:
 # docker compose up --build -d
 ```
 
+### Run with tmux (all 4 in persistent background)
+
+```bash
+# Create a new tmux session with 4 windows, one per project
+tmux new-session -d -s ai-vision -n p1
+tmux new-window -t ai-vision -n p2
+tmux new-window -t ai-vision -n p3
+tmux new-window -t ai-vision -n p4
+
+# Launch each project in its respective window
+tmux send-keys -t ai-vision:p1 'source .venv/bin/activate && streamlit run 01-ai-vision-defect-detector/src/web_demo.py --server.port 8501' Enter
+tmux send-keys -t ai-vision:p2 'source .venv/bin/activate && streamlit run 02-robot-vision-guidance/src/web_demo.py --server.port 8502' Enter
+tmux send-keys -t ai-vision:p3 'source .venv/bin/activate && streamlit run 03-production-anomaly-detector/src/dashboard.py --server.port 8503' Enter
+tmux send-keys -t ai-vision:p4 'source .venv/bin/activate && streamlit run 04-production-monitor-dashboard/src/dashboard.py --server.port 8504' Enter
+
+# Attach to the session
+tmux attach -t ai-vision
+
+# Detach: Ctrl+B, then D
+# Switch windows: Ctrl+B, then window number (0-3) or Ctrl+B,N / Ctrl+B,P
+# View all windows: Ctrl+B,W
+# Kill session when done: tmux kill-session -t ai-vision
+```
+
+Or use the included helper:
+```bash
+./run.sh tmux     # Creates session and launches all 4 projects
+./run.sh tmux-attach   # Re-attach to existing session
+./run.sh tmux-stop     # Kill the session
+```
+
 ### Run individual projects
 
 ```bash

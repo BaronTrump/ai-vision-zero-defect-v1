@@ -122,6 +122,32 @@ case "$MODE" in
     echo -e "${GREEN}✅ Training complete!${NC}"
     ;;
 
+  tmux)
+    echo -e "${BLUE}📺 Creating tmux session 'ai-vision' with 4 windows...${NC}"
+    SESSION="ai-vision"
+    tmux new-session -d -s "$SESSION" -n p1 2>/dev/null || { tmux kill-session -t "$SESSION"; tmux new-session -d -s "$SESSION" -n p1; }
+    tmux new-window -t "$SESSION" -n p2
+    tmux new-window -t "$SESSION" -n p3
+    tmux new-window -t "$SESSION" -n p4
+    tmux send-keys -t "$SESSION:p1" "cd $ROOT_DIR && source .venv/bin/activate && streamlit run 01-ai-vision-defect-detector/src/web_demo.py --server.port 8501" Enter
+    tmux send-keys -t "$SESSION:p2" "cd $ROOT_DIR && source .venv/bin/activate && streamlit run 02-robot-vision-guidance/src/web_demo.py --server.port 8502" Enter
+    tmux send-keys -t "$SESSION:p3" "cd $ROOT_DIR && source .venv/bin/activate && streamlit run 03-production-anomaly-detector/src/dashboard.py --server.port 8503" Enter
+    tmux send-keys -t "$SESSION:p4" "cd $ROOT_DIR && source .venv/bin/activate && streamlit run 04-production-monitor-dashboard/src/dashboard.py --server.port 8504" Enter
+    echo -e "${GREEN}✅ All 4 projects launching in tmux session 'ai-vision'${NC}"
+    echo "   Attach: tmux attach -t ai-vision"
+    echo "   Windows: p1 (8501), p2 (8502), p3 (8503), p4 (8504)"
+    echo "   Detach: Ctrl+B then D"
+    ;;
+
+  tmux-attach)
+    tmux attach -t ai-vision 2>/dev/null || echo -e "${RED}No session 'ai-vision' found. Create one with: ./run.sh tmux${NC}"
+    ;;
+
+  tmux-stop)
+    echo -e "${BLUE}🛑 Stopping tmux session 'ai-vision'...${NC}"
+    tmux kill-session -t ai-vision 2>/dev/null && echo -e "${GREEN}Session stopped.${NC}" || echo -e "${RED}No session 'ai-vision' found.${NC}"
+    ;;
+
   help|*)
     echo -e "${BLUE}[Company Name] — AI Vision Project Manager${NC}"
     echo ""
@@ -134,6 +160,9 @@ case "$MODE" in
     echo "  run [project]     Run a project locally (1|2|3|4|all|defect|robot|anomaly|monitor)"
     echo "  generate-data [n]  Generate synthetic training data"
     echo "  train             Train anomaly detection model"
+    echo "  tmux              Launch all 4 projects in a tmux session"
+    echo "  tmux-attach       Re-attach to the tmux session"
+    echo "  tmux-stop         Kill the tmux session"
     echo "  help              Show this help"
     echo ""
     echo "Examples:"
@@ -141,6 +170,7 @@ case "$MODE" in
     echo "  ./run.sh run 1               # Run defect detector locally"
     echo "  ./run.sh run all             # Run all projects locally"
     echo "  ./run.sh generate-data       # Generate training data"
+    echo "  ./run.sh tmux                # Launch all 4 projects in tmux"
     echo ""
     echo "Quick URL reference (Docker mode):"
     echo "  Defect Detector:   http://localhost:8501"
